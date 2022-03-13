@@ -1,9 +1,10 @@
 /**
- * TODO: Add file header
- * Name:
- * ID:
- * Email:
- * File description: 
+ * Name: Jialin Chen
+ * ID: A16636887
+ * Email: jic053@ucsd.edu
+ * File description: This file containes a tree class
+ * that's been implements to meet the requirements for 
+ * CSE12 Winter22 Fianl
  */
 
 import java.util.List;
@@ -13,10 +14,11 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
- * TODO: Add class header
+ * Implements a generic N-art tree with methods
+ * to add, find, and sort the tree.
  */
 public class CSE12NaryTree<E extends Comparable<E>> {
-    
+
     /**
      * This inner class encapsulates the data and children for a Node.
      * Do NOT edit this inner class.
@@ -102,25 +104,100 @@ public class CSE12NaryTree<E extends Comparable<E>> {
     }
 
     /**
-     * TODO: Add method header
+     * Add a new Node containing element to the N-ary tree in level order
+     * @param element the element to be added to the tree
      */
     public void add(E element) {
-        //TODO
+        if(element == null) 
+            throw new IllegalArgumentException();
+
+        Node toAdd = new Node(element);
+
+        if(this.size == 0){
+            this.root = toAdd;
+            this.size++;
+        }
+        else{
+            Queue<Node> nodes = new LinkedList<>();
+            nodes.add(this.root);
+            while(!nodes.isEmpty()){
+                Node curr = nodes.poll();
+                // if curr is not full
+                // add the element to curr's children
+                if(curr.getNumChildren() < this.N){
+                    curr.addChild(toAdd);
+                    this.size++;
+                    break;
+                }
+                // if curr is full, add curr's children to nodes
+                else{
+                    for(Node n : curr.children){
+                        nodes.add(n);
+                    }
+                }
+            }
+        }
     }
 
     /**
-     * TODO: Add method header
+     * Check if element is in the N-ary tree
+     * @param element element to be checked
+     * @return true if element is in the N-ary tree 
+     * and false otherwise.
      */
     public boolean contains(E element) {
-        //TODO
+        if(element == null) 
+            throw new IllegalArgumentException();
+
+        if(this.size == 0) return false;
+
+        Queue<Node> nodes = new LinkedList<>();
+        nodes.add(this.root);
+
+        while(!nodes.isEmpty()){
+            Node curr = nodes.poll();
+            // return true if element is found
+            if(curr.getData().equals(element)) 
+                return true;
+            // else, add curr's children to nodes
+            for(Node n : curr.children)
+                nodes.add(n);
+        }
+        // return false is element not found
         return false;
     }
 
     /**
-     * TODO: Add method header
+     * Use a PriorityQueue and perform heap sort on the tree 
+     * not modifying the tree itself
+     * @return an ArrayList of all elements in the tree 
+     * in sorted order (ascending)
      */
     public ArrayList<E> sortTree(){
-        //TODO
-        return null;
+        ArrayList<E> toReturn = new ArrayList<>(this.size);
+
+        if(this.size==0) 
+            return toReturn;
+
+        PriorityQueue<E> sorted = new PriorityQueue<>(this.size);
+        Queue<Node> nodes = new LinkedList<>();
+        nodes.add(this.root);
+
+        // level order traverse the tree into nodes and sorted
+        while(!nodes.isEmpty()){
+            Node curr = nodes.poll();
+            sorted.add(curr.getData());
+            if(curr.getNumChildren() > 0){
+                for(Node n : curr.children)
+                    nodes.add(n);
+            }
+        }
+        
+        // copy element from sorted into toReturn ane return
+        while(!sorted.isEmpty()){
+            E e = sorted.poll();
+            toReturn.add(e);
+        }
+        return toReturn;
     }
 }
